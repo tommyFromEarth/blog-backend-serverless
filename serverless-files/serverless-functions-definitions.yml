@@ -1,0 +1,8 @@
+# Controllers Here
+getPosts:
+  handler: src/controllers/blog-controller.handlerGetPosts
+  events:
+    - http:
+        method: get
+        path: posts
+        cors: true

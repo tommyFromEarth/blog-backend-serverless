@@ -1,0 +1,46 @@
+service: blog-backend-serverless
+# app and org for use with dashboard.serverless.com
+# app: blog-backend-serverless
+# org: tommyFromEarth
+
+custom:
+  environment: ${file(env.yml):${self:provider.stage}, file(env.yml):dev}
+
+  serverless-offline:
+    useChildProcesses: true
+
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules:
+      forceExclude:
+        - aws-sdk
+
+  splitStacks:
+    nestedStackCount: 2
+    perFunction: false
+    perType: false
+    perGroupFunction: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x 
+  memorySize: 512
+  timeout: 29
+  stage: dev
+  region: us-west-2 
+
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    API: ${self:custom.environment.API}
+
+
+  # iam:
+  #   role:
+  #     statements: ${file(serverless-files/serverless-lambda-policy-definitions.yml)}
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-split-stacks
+  - serverless-webpack
+
+functions: ${file(serverless-files/serverless-functions-definitions.yml)}
